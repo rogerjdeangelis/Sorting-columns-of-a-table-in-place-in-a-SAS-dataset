@@ -133,3 +133,82 @@ Obs    V1    V2    V3    V4
  10    10     4     4     5
 
 
+ADDITIONAL SOLUTION BY PAUL DORFMAN
+
+Roger,
+
+Very nice Paul
+Paul Dorfman <sashole@bellsouth.net>
+
+The problem I have is understanding the kinds of
+problems a HASH can solve. You keep amazing me with solutions.
+You solution is now burned into my sumapses, to be recalled as needed.
+
+I added your solution to my github
+
+github
+https://tinyurl.com/yc75hrm9
+https://github.com/rogerjdeangelis/Sorting-columns-of-a-table-in-place-in-a-SAS-dataset
+
+Paul's response
+
+Interesting.
+Well, you can make an array for each of the COL1-COL3 and sort each using CALL SORTN.
+But just to find the winners, why sort at all, if you can key-index [0:5] by the results.
+(I'm not sure why you don't deem the three 0's or three 1's as winners - perhaps the rules I don't know).
+
+ods listing;
+data slots;
+ do spin=1 to 10;
+   col1=int(6*uniform(-1));
+   col2=int(6*uniform(-1));
+   col3=int(6*uniform(-1));
+   output;
+ end;
+run;
+
+data winner (keep = Result Winner) ;
+  array h [3, 0:5] _temporary_ ;
+  do until (z) ;
+    set slots end = z ;
+    array col col: ;
+    do over col ;
+      h[_i_, col] = col ;
+    end ;
+  end ;
+  call missing (of col:) ;
+  do Result = lbound (h,2) to hbound (h,2) ;
+    do over col ;
+      col = h[_i_, Result] ;
+    end ;
+    Winner = not Nmiss (of col:) ;
+    output ;
+  end ;
+run ;
+
+
+WORK.WINNER total obs=6
+
+   RESULT    WINNER
+
+      0         1
+      1         0
+      2         0
+      3         1
+      4         1
+      5         1
+
+
+I have a pdf with 566 graphics examples with code and results. If anyone is interested
+they should download and view, github is very slow at renderig complex pdf graphs.
+
+https://github.com/rogerjdeangelis/utl_graphics_400_SAS_and_R_graphics_with_code_and_datasets
+
+Would be nice to have a document wit HASH examples.
+
+
+
+
+
+
+
